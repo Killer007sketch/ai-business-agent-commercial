@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, UniqueConstraint
 
@@ -16,12 +16,12 @@ class Conversation(Base):
     human_required = Column(Boolean, nullable=False, default=False)
     last_intent = Column(String(100), nullable=True)
     last_risk_level = Column(String(50), nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
     updated_at = Column(
         DateTime,
         nullable=False,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     __table_args__ = (
@@ -44,7 +44,7 @@ class ConversationMessage(Base):
     intent = Column(String(100), nullable=True)
     risk_level = Column(String(50), nullable=True)
     human_required = Column(Boolean, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
 
     __table_args__ = (
         UniqueConstraint(
