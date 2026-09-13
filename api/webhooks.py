@@ -6,7 +6,6 @@ import re
 from email.utils import parseaddr
 
 from fastapi import APIRouter, HTTPException, Request
-from svix.webhooks import Webhook, WebhookVerificationError
 
 from agents.conversation_agent import ConversationAgent, ConversationAgentError
 from services.conversation_service import (
@@ -48,6 +47,22 @@ def extract_latest_reply_text(full_text: str) -> str:
     return "\n".join(kept).strip() or text
 
 
+def _verify_resend_webhook(secret: str, raw_body: bytes, headers: dict[str, str]) -> None:
+    """Verify a Resend/Svix webhook without making svix a hard import-time dependency."""
+    try:
+        from svix.webhooks import Webhook, WebhookVerificationError
+    except ImportError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="svix_dependency_not_installed",
+        ) from exc
+
+    try:
+        Webhook(secret).verify(raw_body, headers)
+    except WebhookVerificationError as exc:
+        raise HTTPException(status_code=400, detail="invalid_webhook_signature") from exc
+
+
 @router.post("/resend")
 async def resend_webhook(request: Request):
     secret = os.getenv("RESEND_WEBHOOK_SECRET")
@@ -60,11 +75,11 @@ async def resend_webhook(request: Request):
         "svix-timestamp": request.headers.get("svix-timestamp", ""),
         "svix-signature": request.headers.get("svix-signature", ""),
     }
+
+    _verify_resend_webhook(secret, raw_body, headers)
+
     try:
-        Webhook(secret).verify(raw_body, headers)
         payload = json.loads(raw_body.decode("utf-8"))
-    except WebhookVerificationError as exc:
-        raise HTTPException(status_code=400, detail="invalid_webhook_signature") from exc
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise HTTPException(status_code=400, detail="invalid_webhook_payload") from exc
 
@@ -109,11 +124,21 @@ async def resend_webhook(request: Request):
         provider_email_id=email_id,
     )
     if saved.get("created") is False:
-        return {"ok": True, "handled": True, "duplicate": True, "conversation_id": conversation_id}
+        return {
+            "ok": True,
+            "handled": True,
+            "duplicate": True,
+            "conversation_id": conversation_id,
+        }
 
     # Disabled by default: webhook ingestion itself costs zero OpenAI calls.
     if not _env_bool("EMAIL_ANALYZE_INBOUND", False):
-        return {"ok": True, "handled": True, "analyzed": False, "conversation_id": conversation_id}
+        return {
+            "ok": True,
+            "handled": True,
+            "analyzed": False,
+            "conversation_id": conversation_id,
+        }
 
     try:
         result = ConversationAgent().analyze_message(
@@ -125,7 +150,12 @@ async def resend_webhook(request: Request):
             dry_run=False,
         )
     except ConversationAgentError:
-        return {"ok": True, "handled": True, "analyzed": False, "reason": "conversation_analysis_failed"}
+        return {
+            "ok": True,
+            "handled": True,
+            "analyzed": False,
+            "reason": "conversation_analysis_failed",
+        }
 
     analysis = result.get("analysis") or {}
     update_message_analysis(
@@ -145,9 +175,19 @@ async def resend_webhook(request: Request):
         and not sender_email.startswith(("no-reply@", "noreply@"))
     )
     if not allowed:
-        return {"ok": True, "handled": True, "analyzed": True, "auto_replied": False, "conversation_id": conversation_id}
+        return {
+            "ok": True,
+            "handled": True,
+            "analyzed": True,
+            "auto_replied": False,
+            "conversation_id": conversation_id,
+        }
 
-    reply_subject = subject if subject.lower().startswith("re:") else (f"Re: {subject}" if subject else "Re: Your message")
+    reply_subject = (
+        subject
+        if subject.lower().startswith("re:")
+        else (f"Re: {subject}" if subject else "Re: Your message")
+    )
     inbound_message_id = str(data.get("message_id") or "").strip() or None
     send_result = email_service.send_text_email(
         to_email=sender_email,
@@ -167,4 +207,10 @@ async def resend_webhook(request: Request):
             body=reply_draft,
             provider_message_id=send_result.get("provider_message_id"),
         )
-    return {"ok": True, "handled": True, "analyzed": True, "auto_replied": bool(send_result.get("ok")), "conversation_id": conversation_id}
+    return {
+        "ok": True,
+        "handled": True,
+        "analyzed": True,
+        "auto_replied": bool(send_result.get("ok")),
+        "conversation_id": conversation_id,
+    }

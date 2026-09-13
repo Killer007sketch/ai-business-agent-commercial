@@ -18,7 +18,7 @@ class OpportunityCreate(BaseModel):
     budget_min_usd: int | None = None
     budget_max_usd: int | None = None
     problem: str | None = None
-    requirements: list[str] = []
+    requirements: list[str] = Field(default_factory=list)
 
 
 @router.post("")

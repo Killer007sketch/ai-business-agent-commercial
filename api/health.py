@@ -8,7 +8,7 @@ def root():
     return {
         "service": "ai-business-agent-starter-kit",
         "status": "running",
-        "edition": "commercial-stage1",
+        "edition": "commercial",
     }
 
 
