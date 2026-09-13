@@ -37,6 +37,7 @@ def _validate(data: dict[str, Any]) -> dict[str, Any]:
     autonomy = _require_mapping(data, "autonomy")
     risk = _require_mapping(data, "risk")
     manager = _require_mapping(data, "manager")
+    proposal_agent = _require_mapping(data, "proposal_agent")
 
     if not str(business.get("name") or "").strip():
         raise BusinessConfigError("business.name is required")
@@ -58,6 +59,24 @@ def _validate(data: dict[str, Any]) -> dict[str, Any]:
     )
     manager["model"] = str(manager.get("model") or "gpt-5-mini")
     manager["max_history_chars"] = int(manager.get("max_history_chars", 8000))
+
+    proposal_agent["model"] = str(proposal_agent.get("model") or "gpt-5-mini")
+    proposal_agent["max_opportunities"] = int(proposal_agent.get("max_opportunities", 5))
+    proposal_agent["max_problem_chars"] = int(proposal_agent.get("max_problem_chars", 1200))
+    proposal_agent["max_requirements"] = int(proposal_agent.get("max_requirements", 12))
+    proposal_agent["proposal_min_words"] = int(proposal_agent.get("proposal_min_words", 80))
+    proposal_agent["proposal_max_words"] = int(proposal_agent.get("proposal_max_words", 140))
+
+    if not 1 <= proposal_agent["max_opportunities"] <= 5:
+        raise BusinessConfigError("proposal_agent.max_opportunities must be between 1 and 5")
+    if proposal_agent["max_problem_chars"] <= 0:
+        raise BusinessConfigError("proposal_agent.max_problem_chars must be greater than zero")
+    if proposal_agent["max_requirements"] <= 0:
+        raise BusinessConfigError("proposal_agent.max_requirements must be greater than zero")
+    if proposal_agent["proposal_min_words"] <= 0:
+        raise BusinessConfigError("proposal_agent.proposal_min_words must be greater than zero")
+    if proposal_agent["proposal_max_words"] < proposal_agent["proposal_min_words"]:
+        raise BusinessConfigError("proposal_agent.proposal_max_words must be >= proposal_min_words")
 
     return data
 

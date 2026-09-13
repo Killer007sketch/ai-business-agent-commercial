@@ -87,3 +87,12 @@ manager:
   use_llm_for_routine_decisions: false
   model: "gpt-5-mini"
   max_history_chars: 8000
+
+
+proposal_agent:
+  model: "gpt-5-mini"
+  max_opportunities: 5
+  max_problem_chars: 1200
+  max_requirements: 12
+  proposal_min_words: 80
+  proposal_max_words: 140
