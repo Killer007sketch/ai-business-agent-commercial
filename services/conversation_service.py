@@ -214,3 +214,38 @@ def get_conversation_by_email(contact_email: str) -> dict[str, Any] | None:
         }
     finally:
         db.close()
+
+
+def update_message_analysis(
+    message_id: int,
+    intent: str | None = None,
+    risk_level: str | None = None,
+    human_required: bool | None = None,
+) -> dict[str, Any]:
+    db = SessionLocal()
+    try:
+        message = db.query(ConversationMessage).filter(ConversationMessage.id == message_id).first()
+        if message is None:
+            raise ValueError("message_not_found")
+        conversation = db.query(Conversation).filter(Conversation.id == message.conversation_id).first()
+        if intent is not None:
+            message.intent = str(intent).strip() or None
+            if conversation:
+                conversation.last_intent = message.intent
+        if risk_level is not None:
+            message.risk_level = str(risk_level).strip() or None
+            if conversation:
+                conversation.last_risk_level = message.risk_level
+        if human_required is not None:
+            message.human_required = bool(human_required)
+            if conversation:
+                conversation.human_required = bool(human_required)
+        if conversation:
+            conversation.updated_at = datetime.utcnow()
+        db.commit()
+        return {"ok": True, "message_id": message.id, "conversation_id": message.conversation_id}
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
