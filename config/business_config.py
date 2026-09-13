@@ -38,6 +38,7 @@ def _validate(data: dict[str, Any]) -> dict[str, Any]:
     risk = _require_mapping(data, "risk")
     manager = _require_mapping(data, "manager")
     proposal_agent = _require_mapping(data, "proposal_agent")
+    conversation_agent = _require_mapping(data, "conversation_agent")
 
     if not str(business.get("name") or "").strip():
         raise BusinessConfigError("business.name is required")
@@ -77,6 +78,35 @@ def _validate(data: dict[str, Any]) -> dict[str, Any]:
         raise BusinessConfigError("proposal_agent.proposal_min_words must be greater than zero")
     if proposal_agent["proposal_max_words"] < proposal_agent["proposal_min_words"]:
         raise BusinessConfigError("proposal_agent.proposal_max_words must be >= proposal_min_words")
+
+    conversation_agent["model"] = str(conversation_agent.get("model") or "gpt-5-mini")
+    conversation_agent["max_history_messages"] = int(
+        conversation_agent.get("max_history_messages", 12)
+    )
+    conversation_agent["max_history_body_chars"] = int(
+        conversation_agent.get("max_history_body_chars", 3000)
+    )
+    conversation_agent["max_reply_chars"] = int(
+        conversation_agent.get("max_reply_chars", 4000)
+    )
+    conversation_agent["unsubscribe_reply"] = str(
+        conversation_agent.get("unsubscribe_reply")
+        or "Understood. We will not contact you again."
+    )
+    _require_list(conversation_agent, "unsubscribe_patterns")
+
+    if not 1 <= conversation_agent["max_history_messages"] <= 50:
+        raise BusinessConfigError(
+            "conversation_agent.max_history_messages must be between 1 and 50"
+        )
+    if conversation_agent["max_history_body_chars"] <= 0:
+        raise BusinessConfigError(
+            "conversation_agent.max_history_body_chars must be greater than zero"
+        )
+    if conversation_agent["max_reply_chars"] <= 0:
+        raise BusinessConfigError(
+            "conversation_agent.max_reply_chars must be greater than zero"
+        )
 
     return data
 

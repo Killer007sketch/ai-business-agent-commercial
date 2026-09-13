@@ -96,3 +96,17 @@ proposal_agent:
   max_requirements: 12
   proposal_min_words: 80
   proposal_max_words: 140
+
+conversation_agent:
+  model: "gpt-5-mini"
+  max_history_messages: 12
+  max_history_body_chars: 3000
+  max_reply_chars: 4000
+  unsubscribe_reply: "Understood. We will not contact you again."
+  unsubscribe_patterns:
+    - "\\bunsubscribe\\b"
+    - "\\bremove me\\b"
+    - "\\bstop emailing\\b"
+    - "\\bdo not contact\\b"
+    - "\\bdon't contact\\b"
+    - "\\bopt out\\b"
