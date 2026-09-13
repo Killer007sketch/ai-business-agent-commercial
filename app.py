@@ -14,7 +14,11 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="AI Business Agent Starter Kit",
-    version="1.0.0-stage5",
+    description=(
+        "Developer starter kit for opportunity filtering, proposal generation, "
+        "conversation handling, risk gating, and optional email automation."
+    ),
+    version="1.0.0-rc1",
 )
 
 app.include_router(health_router)
