@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from api.conversations import router as conversations_router
+from api.demo import router as demo_router
 from api.health import router as health_router
 from api.opportunities import router as opportunities_router
 from api.proposals import router as proposals_router
@@ -18,10 +19,11 @@ app = FastAPI(
         "Developer starter kit for opportunity filtering, proposal generation, "
         "conversation handling, risk gating, and optional email automation."
     ),
-    version="1.0.0-rc1",
+    version="1.0.0-rc2",
 )
 
 app.include_router(health_router)
+app.include_router(demo_router)
 app.include_router(opportunities_router)
 app.include_router(proposals_router)
 app.include_router(conversations_router)

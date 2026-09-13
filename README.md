@@ -14,6 +14,7 @@ A modular FastAPI starter kit for building AI-assisted business workflows around
 - Safe email defaults: inbound analysis and auto-reply are disabled until explicitly enabled
 - Docker and Docker Compose setup
 - Pytest smoke/core tests
+- Built-in responsive browser demo at `/demo`
 
 ## Project layout
 
@@ -68,6 +69,7 @@ Open:
 
 - API docs: `http://localhost:8000/docs`
 - Health check: `http://localhost:8000/health`
+- Interactive demo: `http://localhost:8000/demo`
 
 ## Quick start — Docker Compose
 
@@ -233,7 +235,7 @@ Before production deployment:
 
 ## Notes
 
-This repository is a developer starter kit, not a finished vertical SaaS product. Authentication, billing, a frontend, marketplace-specific submission automation, and customer-specific compliance controls are intentionally not included in the core.
+This repository is a developer starter kit, not a finished vertical SaaS product. It includes a lightweight buyer/developer demo UI at `/demo`, but authentication, billing, a production customer portal, marketplace-specific submission automation, and customer-specific compliance controls are intentionally not included in the core.
 
 ## License
 
