@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from database.session import SessionLocal
@@ -37,7 +37,7 @@ def get_or_create_conversation(
                 conversation.company_name = company_name.strip()
                 changed = True
             if changed:
-                conversation.updated_at = datetime.utcnow()
+                conversation.updated_at = datetime.now(UTC)
                 db.commit()
 
             return {
@@ -128,7 +128,7 @@ def save_conversation_message(
         )
         db.add(message)
 
-        conversation.updated_at = datetime.utcnow()
+        conversation.updated_at = datetime.now(UTC)
         if intent:
             conversation.last_intent = intent
         if risk_level:
@@ -241,7 +241,7 @@ def update_message_analysis(
             if conversation:
                 conversation.human_required = bool(human_required)
         if conversation:
-            conversation.updated_at = datetime.utcnow()
+            conversation.updated_at = datetime.now(UTC)
         db.commit()
         return {"ok": True, "message_id": message.id, "conversation_id": message.conversation_id}
     except Exception:
