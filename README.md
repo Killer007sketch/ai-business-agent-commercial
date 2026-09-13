@@ -234,3 +234,21 @@ Before production deployment:
 ## Notes
 
 This repository is a developer starter kit, not a finished vertical SaaS product. Authentication, billing, a frontend, marketplace-specific submission automation, and customer-specific compliance controls are intentionally not included in the core.
+
+## License
+
+This codebase is sold under a non-exclusive commercial source-code license. A licensed buyer may use, modify, rebrand, deploy, and incorporate the software into their own commercial products and client projects.
+
+The underlying starter kit itself may not be re-listed, sublicensed, redistributed, or resold as a standalone source-code product or template.
+
+Copyright remains with the licensor. Third-party packages and services remain subject to their own licenses and terms.
+
+See `LICENSE.md` for the repository license notice. If this codebase was purchased through a marketplace whose transaction terms govern the license, those marketplace terms control to the extent of any conflict.
+
+## Buyer expectations
+
+This is a backend developer starter kit. It intentionally does not include a customer-facing frontend, authentication system, billing system, hosted infrastructure, marketplace account automation, or third-party API credits.
+
+External services such as OpenAI, Resend, PostgreSQL hosting, and deployment providers require the buyer's own accounts and may charge their own fees. Provider APIs and terms can change independently of this codebase.
+
+Before exposing the API publicly, add the authentication, authorization, rate limiting, network controls, monitoring, and compliance measures appropriate for your deployment.
