@@ -1,0 +1,89 @@
+business:
+  name: "Example AI Studio"
+  support_email: "support@example.com"
+
+offer:
+  name: "AI Automation Pilot"
+  currency: "USD"
+  price: 199
+  price_policy: "fixed"
+  max_delivery_days: 7
+
+scope:
+  approved:
+    - "Review the customer's workflow and requirements"
+    - "Design an AI-assisted or automation workflow"
+    - "Build a working prototype within the agreed scope"
+    - "Configure routing, response, or workflow logic"
+    - "Provide a short handoff or demo"
+  excluded:
+    - "Unlimited revisions or unlimited automation"
+    - "Unapproved custom software development"
+    - "Large-scale migrations unless explicitly included"
+    - "Guaranteed revenue, savings, or business outcomes"
+
+autonomy:
+  allowed_next_actions:
+    - "answer_standard_questions"
+    - "collect_business_name"
+    - "collect_website"
+    - "collect_workflow_details"
+    - "collect_redacted_examples"
+    - "collect_tone_preferences"
+    - "collect_routing_preferences"
+    - "collect_timezone"
+    - "collect_preferred_start_date"
+    - "explain_scope"
+    - "explain_price"
+    - "explain_timeline"
+    - "offer_email_based_kickoff_coordination"
+
+  forbidden_actions:
+    - "offer_discount"
+    - "change_price"
+    - "promise_refund"
+    - "issue_refund"
+    - "send_or_promise_payment_link"
+    - "send_or_promise_checkout_link"
+    - "send_or_promise_booking_link"
+    - "confirm_calendar_booking"
+    - "sign_or_accept_contract"
+    - "accept_legal_terms"
+    - "promise_guaranteed_results"
+    - "agree_to_unapproved_custom_work"
+    - "request_passwords"
+    - "request_api_keys"
+    - "request_secrets_or_credentials"
+    - "make_financial_commitment"
+
+risk:
+  high_risk_patterns:
+    - "\\bcontract\\b"
+    - "\\bagreement\\b"
+    - "\\blegal\\b"
+    - "\\blawyer\\b"
+    - "\\bliability\\b"
+    - "\\bindemn"
+    - "\\brefund\\b"
+    - "\\bchargeback\\b"
+    - "\\bpayment\\b"
+    - "\\bbank\\b"
+    - "\\bwire\\b"
+    - "\\binvoice\\b"
+    - "\\bcredit card\\b"
+    - "\\bdiscount\\b"
+    - "\\bpassword\\b"
+    - "\\bapi[\\s-]?key\\b"
+    - "\\bsecret\\b"
+    - "\\bcredential"
+    - "\\bguarantee"
+    - "\\bpromise\\b"
+    - "\\bcustom integration\\b"
+    - "\\bcustom software\\b"
+    - "\\benterprise\\b"
+    - "\\bunlimited\\b"
+
+manager:
+  use_llm_for_routine_decisions: false
+  model: "gpt-5-mini"
+  max_history_chars: 8000
